@@ -1,0 +1,78 @@
+
+No message
+
+No message
+{"update_id":327744150,
+"message":{"message_id":3,"from":{"id":1272444148,"is_bot":false,"first_name":"Azreen","username":"azimeazreen","language_code":"en"},"chat":{"id":1272444148,"first_name":"Azreen","username":"azimeazreen","type":"private"},"date":1776586800,"text":"Hello"}}
+TEXT: Hello
+{"update_id":327744151,
+"message":{"message_id":4,"from":{"id":1272444148,"is_bot":false,"first_name":"Azreen","username":"azimeazreen","language_code":"en"},"chat":{"id":1272444148,"first_name":"Azreen","username":"azimeazreen","type":"private"},"date":1776588852,"text":"start"}}
+TEXT: start
+{"update_id":327744152,
+"message":{"message_id":5,"from":{"id":1272444148,"is_bot":false,"first_name":"Azreen","username":"azimeazreen","language_code":"en"},"chat":{"id":1272444148,"first_name":"Azreen","username":"azimeazreen","type":"private"},"date":1776589236,"text":"/start 13185","entities":[{"offset":0,"length":6,"type":"bot_command"}]}}
+TEXT: /start 13185
+PARTS: Array
+(
+    [0] => /start
+    [1] => 13185
+)
+CODE: 13185
+USER FOUND: 8
+CHAT ID SAVED
+{"update_id":327744153,
+"message":{"message_id":6,"from":{"id":1272444148,"is_bot":false,"first_name":"Azreen","username":"azimeazreen","language_code":"en"},"chat":{"id":1272444148,"first_name":"Azreen","username":"azimeazreen","type":"private"},"date":1776589901,"text":"/start 13185","entities":[{"offset":0,"length":6,"type":"bot_command"}]}}
+TEXT: /start 13185
+PARTS: Array
+(
+    [0] => /start
+    [1] => 13185
+)
+CODE: 13185
+USER FOUND: 8
+CHAT ID SAVED
+{"update_id":327744154,
+"message":{"message_id":7,"from":{"id":1272444148,"is_bot":false,"first_name":"Azreen","username":"azimeazreen","language_code":"en"},"chat":{"id":1272444148,"first_name":"Azreen","username":"azimeazreen","type":"private"},"date":1776589960,"text":"/stop","entities":[{"offset":0,"length":5,"type":"bot_command"}]}}
+TEXT: /stop
+{"update_id":327744155,
+"message":{"message_id":8,"from":{"id":1272444148,"is_bot":false,"first_name":"Azreen","username":"azimeazreen","language_code":"en"},"chat":{"id":1272444148,"first_name":"Azreen","username":"azimeazreen","type":"private"},"date":1776589979,"text":"/start 13185","entities":[{"offset":0,"length":6,"type":"bot_command"}]}}
+TEXT: /start 13185
+PARTS: Array
+(
+    [0] => /start
+    [1] => 13185
+)
+CODE: 13185
+USER FOUND: 8
+CHAT ID SAVED
+{"update_id":327744156,
+"message":{"message_id":9,"from":{"id":1272444148,"is_bot":false,"first_name":"Azreen","username":"azimeazreen","language_code":"en"},"chat":{"id":1272444148,"first_name":"Azreen","username":"azimeazreen","type":"private"},"date":1776590147,"text":"/start 13185","entities":[{"offset":0,"length":6,"type":"bot_command"}]}}
+TEXT: /start 13185
+PARTS: Array
+(
+    [0] => /start
+    [1] => 13185
+)
+CODE: 13185
+USER FOUND: 8
+CHAT ID SAVED
+{"update_id":327744157,
+"message":{"message_id":10,"from":{"id":1272444148,"is_bot":false,"first_name":"Azreen","username":"azimeazreen","language_code":"en"},"chat":{"id":1272444148,"first_name":"Azreen","username":"azimeazreen","type":"private"},"date":1776590188,"text":"/start 12345","entities":[{"offset":0,"length":6,"type":"bot_command"}]}}
+TEXT: /start 12345
+PARTS: Array
+(
+    [0] => /start
+    [1] => 12345
+)
+CODE: 12345
+NO USER FOUND
+{"update_id":327744158,
+"message":{"message_id":16,"from":{"id":1272444148,"is_bot":false,"first_name":"Azreen","username":"azimeazreen","language_code":"en"},"chat":{"id":1272444148,"first_name":"Azreen","username":"azimeazreen","type":"private"},"date":1776590753,"text":"/start 27110","entities":[{"offset":0,"length":6,"type":"bot_command"}]}}
+TEXT: /start 27110
+PARTS: Array
+(
+    [0] => /start
+    [1] => 27110
+)
+CODE: 27110
+USER FOUND: 9
+CHAT ID SAVED
