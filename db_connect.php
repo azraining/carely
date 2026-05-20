@@ -1,6 +1,6 @@
 <?php
-$host     = "mysql.railway.internal";  // your MYSQL_HOST
-$port     = 3306;                                  // your MYSQL_PORT (check this!)
+$host     = "ballast.proxy.rlwy.net";  // your MYSQL_HOST
+$port     = 33205;                                  // your MYSQL_PORT (check this!)
 $dbname   = "railway";                              // your MYSQL_DATABASE
 $username = "root";                                 // your MYSQL_USER
 $password = "VcWYiEoGxyrZtqYLVygeUXNnPRpixkZo";                         // your MYSQL_PASSWORD
