@@ -78,53 +78,53 @@ $caregiver_email = $caregiver['email'];
 $chatId          = $caregiver['telegram_chat_id'];
 $time            = date("Y-m-d H:i:s");
 
-// ===== PHPMAILER LOADED HERE - only after DB insert is safe =====
-require 'PHPMailer-master/src/PHPMailer.php';
-require 'PHPMailer-master/src/SMTP.php';
-require 'PHPMailer-master/src/Exception.php';
-
-use PHPMailer\PHPMailer\PHPMailer;
 
 // ===== EMAIL ALERT =====
-$mail = new PHPMailer(true);
+// ===== BREVO EMAIL ALERT =====
 
-try {
-    $mail->isSMTP();
-    $mail->SMTPDebug = 2;
-    $mail->Debugoutput = 'error_log';
-    $mail->SMTPOptions = [
-        'ssl' => [
-            'verify_peer' => false,
-            'verify_peer_name' => false,
-            'allow_self_signed' => true
+$emailData = [
+    "sender" => [
+        "name"  => "Carely",
+        "email" => "azimenurazreen@gmail.com"
+    ],
+    "to" => [
+        [
+            "email" => $caregiver_email
         ]
-    ];
-    $mail->Host       = 'smtp.gmail.com';
-    $mail->SMTPAuth   = true;
-    $mail->Username   = 'azimenurazreen@gmail.com';  // <-- replace
-    $mail->Password   = 'lfkpupqgrbnuydsx';      // <-- replace
-    $mail->SMTPSecure = 'tls';
-    $mail->Port       = 587;
-
-    $mail->setFrom('azimenurazreen@gmail.com', 'Carely');
-    $mail->addAddress($caregiver_email);
-
-    $mail->isHTML(true);
-    $mail->Subject = 'Medication Missed Alert';
-    $mail->Body    = "
-        <p>Patient: <b>$patient_name</b></p>
-        <p>Medication: <b>$medicine</b></p>
-        <p>Time: <b>$time</b></p>
+    ],
+    "subject" => "Medication Missed Alert",
+    "htmlContent" => "
+        <h3>⚠️ Medication Missed Alert</h3>
+        <p><b>Patient:</b> $patient_name</p>
+        <p><b>Medication:</b> $medicine</p>
+        <p><b>Time:</b> $time</p>
         <p>The patient did not take their medication within the alert window.</p>
-    ";
+    "
+];
 
-    $mail->send();
+$ch = curl_init();
+
+curl_setopt($ch, CURLOPT_URL, "https://api.brevo.com/v3/smtp/email");
+curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+curl_setopt($ch, CURLOPT_POST, true);
+
+curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($emailData));
+
+curl_setopt($ch, CURLOPT_HTTPHEADER, [
+    "accept: application/json",
+    "api-key: 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",
+    "content-type: application/json"
+]);
+
+$response = curl_exec($ch);
+
+if (curl_errno($ch)) {
+    $emailStatus = "Email Failed: " . curl_error($ch);
+} else {
     $emailStatus = "Email Sent";
-
-} catch (Exception $e) {
-    $emailStatus = "Email Failed: " . $mail->ErrorInfo;
-    echo $emailStatus;
 }
+
+curl_close($ch);
 
 // ===== TELEGRAM ALERT =====
 $telegramStatus = "No Telegram ID";
