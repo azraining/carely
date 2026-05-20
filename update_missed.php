@@ -112,7 +112,7 @@ curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($emailData));
 
 curl_setopt($ch, CURLOPT_HTTPHEADER, [
     "accept: application/json",
-    "api-key: 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",
+    "api-key: " . getenv("BREVO_API_KEY"),
     "content-type: application/json"
 ]);
 
