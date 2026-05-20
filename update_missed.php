@@ -1,13 +1,7 @@
 <?php
 include "db_connect.php";
 
-date_default_timezone_set('Asia/Kuala_Lumpur'); // Set timezone to Malaysia
-
-require 'PHPMailer-master/src/PHPMailer.php';
-require 'PHPMailer-master/src/SMTP.php';
-require 'PHPMailer-master/src/Exception.php';
-
-use PHPMailer\PHPMailer\PHPMailer;
+// ===== NO REQUIRES AT TOP - PHPMailer loaded only when needed =====
 
 if (!isset($_POST['medicine_name'], $_POST['status'], $_POST['device_code'])) {
     echo "Missing Data";
@@ -31,7 +25,7 @@ if ($result->num_rows == 0) {
 
 $patient_id = $result->fetch_assoc()['patient_id'];
 
-// ===== INSERT MEDICATION LOG =====
+// ===== INSERT MEDICATION LOG (happens first, before anything else) =====
 $stmt = $conn->prepare("
     INSERT INTO medication_logs (patient_id, medicine_name, status)
     VALUES (?, ?, ?)
@@ -43,13 +37,14 @@ if (!$stmt->execute()) {
     exit();
 }
 
-// ===== ONLY SEND ALERT IF MISSED =====
+echo "Logged OK\n";  // at this point data is safely in DB
+
+// ===== STOP HERE IF NOT MISSED =====
 if ($status !== "Missed") {
-    echo "Logged";
     exit();
 }
 
-// ===== GET PATIENT NAME (prepared) =====
+// ===== GET PATIENT NAME =====
 $stmt = $conn->prepare("SELECT name FROM users WHERE id = ?");
 $stmt->bind_param("i", $patient_id);
 $stmt->execute();
@@ -62,7 +57,7 @@ if ($patientResult->num_rows == 0) {
 
 $patient_name = $patientResult->fetch_assoc()['name'];
 
-// ===== GET CAREGIVER (prepared) =====
+// ===== GET CAREGIVER =====
 $stmt = $conn->prepare("
     SELECT u.email, u.telegram_chat_id
     FROM users u
@@ -74,15 +69,21 @@ $stmt->execute();
 $caregiverResult = $stmt->get_result();
 
 if ($caregiverResult->num_rows == 0) {
-    // No caregiver assigned - log only, no alert
     echo "Missed Logged (no caregiver assigned)";
     exit();
 }
 
-$caregiver        = $caregiverResult->fetch_assoc();
-$caregiver_email  = $caregiver['email'];
-$chatId           = $caregiver['telegram_chat_id'];
-$time             = date("Y-m-d H:i:s");
+$caregiver       = $caregiverResult->fetch_assoc();
+$caregiver_email = $caregiver['email'];
+$chatId          = $caregiver['telegram_chat_id'];
+$time            = date("Y-m-d H:i:s");
+
+// ===== PHPMAILER LOADED HERE - only after DB insert is safe =====
+require 'PHPMailer-master/src/PHPMailer.php';
+require 'PHPMailer-master/src/SMTP.php';
+require 'PHPMailer-master/src/Exception.php';
+
+use PHPMailer\PHPMailer\PHPMailer;
 
 // ===== EMAIL ALERT =====
 $mail = new PHPMailer(true);
@@ -91,12 +92,12 @@ try {
     $mail->isSMTP();
     $mail->Host       = 'smtp.gmail.com';
     $mail->SMTPAuth   = true;
-    $mail->Username   = 'azimenurazreen@gmail.com';   // <-- replace
-    $mail->Password   = 'lfkpupqgrbnuydsx';       // <-- replace
+    $mail->Username   = 'azimenurazreen@gmail.com';  // <-- replace
+    $mail->Password   = 'lfkpupqgrbnuydsx';      // <-- replace
     $mail->SMTPSecure = 'tls';
     $mail->Port       = 587;
 
-    $mail->setFrom('azimenurazreen@gmail.com', 'Smart Pill Box');
+    $mail->setFrom('azimenurazreen@gmail.com', 'Carely');
     $mail->addAddress($caregiver_email);
 
     $mail->isHTML(true);
@@ -121,29 +122,37 @@ $telegramStatus = "No Telegram ID";
 if (!empty($chatId)) {
     $botToken = "8058219409:AAFr8rhUWmLL14VFfmTAt2UORiV7BLmcKXA";  // <-- replace
     $message  = urlencode(
-        "⚠️ MISSED MEDICATION ALERT\n" .
+        "MISSED MEDICATION ALERT\n" .
         "Patient: $patient_name\n" .
         "Medicine: $medicine\n" .
         "Time: $time"
     );
 
-    $url      = "https://api.telegram.org/bot$botToken/sendMessage?chat_id=$chatId&text=$message";
+    $url = "https://api.telegram.org/bot$botToken/sendMessage";
+
     $ch = curl_init();
-
     curl_setopt($ch, CURLOPT_URL, $url);
+    curl_setopt($ch, CURLOPT_POST, true);
+    curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query([
+        'chat_id' => $chatId,
+        'text'    => "⚠️ MISSED MEDICATION ALERT
+Patient: $patient_name
+Medicine: $medicine
+Time: $time"
+    ]));
     curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-
+    curl_setopt($ch, CURLOPT_TIMEOUT, 10);
+    
     $response = curl_exec($ch);
 
-    if (curl_errno($ch)) {
-        $telegramStatus = "Curl Error: " . curl_error($ch);
-    } else {
-        $telegramStatus = $response ? "Telegram Sent" : "Telegram Failed";
-    }
-
     curl_close($ch);
+
+    if ($response === false) {
+        $telegramStatus = "Telegram Failed";
+    } else {
+        $telegramStatus = $response;
+    }
 }
 
-echo "Missed Logged | $emailStatus | $telegramStatus";
+echo "$emailStatus | $telegramStatus";
 ?>
-
