@@ -128,9 +128,20 @@ if (!empty($chatId)) {
     );
 
     $url      = "https://api.telegram.org/bot$botToken/sendMessage?chat_id=$chatId&text=$message";
-    $response = file_get_contents($url);
+    $ch = curl_init();
 
-    $telegramStatus = $response ? "Telegram Sent" : "Telegram Failed";
+    curl_setopt($ch, CURLOPT_URL, $url);
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+
+    $response = curl_exec($ch);
+
+    if (curl_errno($ch)) {
+        $telegramStatus = "Curl Error: " . curl_error($ch);
+    } else {
+        $telegramStatus = $response ? "Telegram Sent" : "Telegram Failed";
+    }
+
+    curl_close($ch);
 }
 
 echo "Missed Logged | $emailStatus | $telegramStatus";
