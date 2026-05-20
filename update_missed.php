@@ -104,6 +104,7 @@ $emailData = [
 
 $ch = curl_init();
 
+
 curl_setopt($ch, CURLOPT_URL, "https://api.brevo.com/v3/smtp/email");
 curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
 curl_setopt($ch, CURLOPT_POST, true);
