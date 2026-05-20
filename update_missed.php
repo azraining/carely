@@ -90,6 +90,15 @@ $mail = new PHPMailer(true);
 
 try {
     $mail->isSMTP();
+    $mail->SMTPDebug = 2;
+    $mail->Debugoutput = 'error_log';
+    $mail->SMTPOptions = [
+        'ssl' => [
+            'verify_peer' => false,
+            'verify_peer_name' => false,
+            'allow_self_signed' => true
+        ]
+    ];
     $mail->Host       = 'smtp.gmail.com';
     $mail->SMTPAuth   = true;
     $mail->Username   = 'azimenurazreen@gmail.com';  // <-- replace
@@ -114,6 +123,7 @@ try {
 
 } catch (Exception $e) {
     $emailStatus = "Email Failed: " . $mail->ErrorInfo;
+    echo $emailStatus;
 }
 
 // ===== TELEGRAM ALERT =====
