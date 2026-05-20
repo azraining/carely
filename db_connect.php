@@ -1,17 +1,13 @@
 <?php
-    $host = "mysql.railway.internal";
-    $username = "root";      // default for XAMPP
-    $password = "VcWYiEoGxyrZtqYLVygeUXNnPRpixkZo";          // default empty
-    $database = "railway";
+$host     = "mysql.railway.internal";  // your MYSQL_HOST
+$port     = 3306;                                  // your MYSQL_PORT (check this!)
+$dbname   = "railway";                              // your MYSQL_DATABASE
+$username = "root";                                 // your MYSQL_USER
+$password = "VcWYiEoGxyrZtqYLVygeUXNnPRpixkZo";                         // your MYSQL_PASSWORD
 
-    // Create connection
-    $conn = new mysqli($host, $username, $password, $database, 3307);
+$conn = new mysqli($host, $username, $password, $dbname, $port);
 
-    // Check connection
-    if ($conn->connect_error) {
-        die("Connection failed: " . $conn->connect_error);
-    }
-
-    // Optional: set charset
-    $conn->set_charset("utf8");
+if ($conn->connect_error) {
+    die("Connection failed: " . $conn->connect_error);
+}
 ?>
