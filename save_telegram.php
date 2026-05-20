@@ -34,9 +34,11 @@ if (strpos($text, "/start") === 0) {
     file_put_contents("log.txt", "CODE: $code\n", FILE_APPEND);
 
     // ===== FIND USER =====
-    $result = $conn->query("
-        SELECT id FROM users WHERE telegram_code='$code'
-    ");
+    $stmt = $conn->prepare("SELECT id FROM users WHERE telegram_code=?");
+    $stmt->bind_param("s", $code);
+    $stmt->execute();
+
+    $result = $stmt->get_result();
 
     if (!$result) {
         file_put_contents("log.txt", "SQL ERROR: " . $conn->error . "\n", FILE_APPEND);
@@ -51,13 +53,17 @@ if (strpos($text, "/start") === 0) {
         file_put_contents("log.txt", "USER FOUND: $user_id\n", FILE_APPEND);
 
         // ===== SAVE CHAT ID =====
-        $update = $conn->query("
+        $update = $conn->prepare("
             UPDATE users 
-            SET telegram_chat_id='$chat_id'
-            WHERE id='$user_id'
+            SET telegram_chat_id=?
+            WHERE id=?
         ");
 
-        if (!$update) {
+        $update->bind_param("si", $chat_id, $user_id);
+
+        $update->execute();
+
+        if ($update->error) {
             file_put_contents("log.txt", "UPDATE ERROR: " . $conn->error . "\n", FILE_APPEND);
         } else {
             file_put_contents("log.txt", "CHAT ID SAVED\n", FILE_APPEND);
@@ -68,7 +74,26 @@ if (strpos($text, "/start") === 0) {
 
         $msg = urlencode("✅ Connected to Smart Pill Box!");
 
-        file_get_contents("https://api.telegram.org/bot$botToken/sendMessage?chat_id=$chat_id&text=$msg");
+        $url = "https://api.telegram.org/bot$botToken/sendMessage";
+
+        $post = [
+            'chat_id' => $chat_id,
+            'text'    => "✅ Connected to Smart Pill Box!"
+        ];
+
+        $ch = curl_init($url);
+
+        curl_setopt($ch, CURLOPT_POST, true);
+        curl_setopt($ch, CURLOPT_POSTFIELDS, $post);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+
+        $response = curl_exec($ch);
+
+        if (curl_errno($ch)) {
+            file_put_contents("log.txt", "CURL ERROR: " . curl_error($ch) . PHP_EOL, FILE_APPEND);
+        }
+
+        curl_close($ch);
 
     } else {
 
@@ -80,5 +105,9 @@ if (strpos($text, "/start") === 0) {
 
         file_get_contents("https://api.telegram.org/bot$botToken/sendMessage?chat_id=$chat_id&text=$msg");
     }
+
+    http_response_code(200);
+    echo "OK";
+    exit();
 }
 ?>
