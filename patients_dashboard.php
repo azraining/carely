@@ -136,10 +136,11 @@ $todayPct    = $todayTotal > 0 ? round(($todayTaken / $todayTotal) * 100) : 0;
 
         /* ── TWO-COLUMN LAYOUT ── */
         .dash-grid {
-            display: grid;
-            grid-template-columns: 340px 1fr;
-            gap: 22px;
-            align-items: start;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            max-width: 700px;
+            margin: auto;
         }
         .dash-col-left  { display: flex; flex-direction: column; gap: 18px; }
         .dash-col-right { display: flex; flex-direction: column; gap: 18px; }
@@ -443,8 +444,6 @@ $todayPct    = $todayTotal > 0 ? round(($todayTaken / $todayTotal) * 100) : 0;
         Welcome back, <strong><?php echo htmlspecialchars($_SESSION['user_name']); ?></strong> 👋
         &nbsp;·&nbsp; <?php echo date('l, d F Y'); ?>
     </p>
-    <p class="page-sub fade-in delay-1">Auto-refreshes every 30 seconds</p>
-
     <!-- TWO-COLUMN GRID -->
     <div class="dash-grid">
 
@@ -464,46 +463,6 @@ $todayPct    = $todayTotal > 0 ? round(($todayTaken / $todayTotal) * 100) : 0;
                 <?php endif; ?>
             </div>
 
-            <!-- SUMMARY STATS -->
-            <div class="summary-row fade-in delay-2">
-                <div class="sum-card sc-taken">
-                    <div class="sum-val"><?php echo $todayTaken; ?></div>
-                    <div class="sum-lbl">Taken Today</div>
-                </div>
-                <div class="sum-card sc-missed">
-                    <div class="sum-val"><?php echo $todayMissed; ?></div>
-                    <div class="sum-lbl">Missed Today</div>
-                </div>
-                <div class="sum-card sc-total">
-                    <div class="sum-val"><?php echo $todayTotal; ?></div>
-                    <div class="sum-lbl">Total Today</div>
-                </div>
-                <div class="sum-card sc-rate">
-                    <div class="sum-val"><?php echo $todayPct; ?>%</div>
-                    <div class="sum-lbl">Adherence Rate</div>
-                </div>
-            </div>
-
-            <!-- DAILY PROGRESS -->
-            <?php
-            $barClass = $todayPct >= 80 ? 'good' : ($todayPct >= 50 ? 'warning' : 'bad');
-            $barMsg   = $todayTotal == 0  ? 'No records yet today.'
-                      : ($todayPct == 100 ? 'Perfect — all medications taken!'
-                      : ($todayPct >= 80  ? 'Almost there, keep going!'
-                      : ($todayPct >= 50  ? 'Halfway there — do not give up.'
-                      :                     'Please remember to take your medication.')));
-            ?>
-            <div class="progress-card fade-in delay-2">
-                <div class="progress-header">
-                    <span>📈 Today's Progress</span>
-                    <span><?php echo $todayPct; ?>%</span>
-                </div>
-                <div class="progress-track">
-                    <div class="progress-fill <?php echo $barClass; ?>" style="width:<?php echo $todayPct; ?>%"></div>
-                </div>
-                <p class="progress-caption"><?php echo $barMsg; ?></p>
-            </div>
-
             <!-- QUICK LINK -->
             <a href="patient_add_schedule.php" class="quick-link fade-in delay-3">
                 <span>💊 Manage My Medications</span>
@@ -520,104 +479,40 @@ $todayPct    = $todayTotal > 0 ? round(($todayTaken / $todayTotal) * 100) : 0;
                 <div class="section-head">
                     <div class="section-title">📅 Medication Schedule</div>
                 </div>
-                <div class="table-card">
-                    <table class="data-table">
-                        <thead>
-                            <tr><th>Medicine</th><th>Time</th></tr>
-                        </thead>
-                        <tbody>
-                        <?php if ($schedule->num_rows === 0): ?>
-                            <tr>
-                                <td colspan="2" class="empty-row">
-                                    No medications scheduled yet.
-                                    <a href="patient_add_schedule.php" style="color:var(--lilac-dark);font-weight:600;">Add one →</a>
-                                </td>
-                            </tr>
-                        <?php else:
+                        <div class="table-card">
+                            <?php
                             $schedule->data_seek(0);
-                            while ($row = $schedule->fetch_assoc()):
-                                $h = str_pad($row['medication_hour'],   2,'0',STR_PAD_LEFT);
-                                $m = str_pad($row['medication_minute'], 2,'0',STR_PAD_LEFT);
-                        ?>
-                            <tr>
-                                <td class="med-name">💊 <?php echo htmlspecialchars($row['medicine_name']); ?></td>
-                                <td><span class="time-badge"><?php echo "$h:$m"; ?></span></td>
-                            </tr>
-                        <?php endwhile; endif; ?>
-                        </tbody>
-                    </table>
-                </div>
-            </div>
 
-            <!-- MEDICATION HISTORY (collapsible by week) -->
-            <div class="fade-in delay-3">
-                <div class="section-head">
-                    <div class="section-title">📋 Medication History</div>
-                </div>
+                            if ($schedule->num_rows == 0){
+                                echo "<p class='empty-row'>No medications scheduled.</p>";
+                            }else{
+                                while($row = $schedule->fetch_assoc()){
 
-                <?php if (empty($groupedLogs)): ?>
-                    <div class="table-card">
-                        <p class="empty-row">No medication history yet.</p>
-                    </div>
+                                    $h = str_pad($row['medication_hour'],2,'0',STR_PAD_LEFT);
+                                    $m = str_pad($row['medication_minute'],2,'0',STR_PAD_LEFT);
 
-                <?php else:
-                    $weekIndex = 0;
-                    foreach ($groupedLogs as $weekLabel => $rows):
-                        $wTaken  = 0; $wMissed = 0;
-                        foreach ($rows as $r) $r['status'] == 'Taken' ? $wTaken++ : $wMissed++;
-                        $wTotal  = $wTaken + $wMissed;
-                        $wPct    = $wTotal > 0 ? round(($wTaken / $wTotal) * 100) : 0;
-                        $wClass  = $wPct >= 80 ? 'good' : ($wPct >= 50 ? 'warning' : 'bad');
-                        $uid     = 'week-' . $weekIndex;
-                        $isFirst = $weekIndex === 0;
-                ?>
+                                    echo "
+                                    <div style='padding:15px 20px;
+                                                border-bottom:1px solid #eee;
+                                                display:flex;
+                                                justify-content:space-between;
+                                                align-items:center;'>
 
-                <div class="week-group">
+                                        <div style='font-size:1rem;font-weight:600;'>
+                                            💊 {$row['medicine_name']}
+                                        </div>
 
-                    <!-- WEEK HEADER (clickable) -->
-                    <div class="week-header" onclick="toggleWeek('<?php echo $uid; ?>', this)">
-                        <div class="week-left">
-                            <span class="week-label">📅 <?php echo htmlspecialchars($weekLabel); ?></span>
-                            <div class="week-pills">
-                                <span class="wpill taken-pill">✔ <?php echo $wTaken; ?></span>
-                                <span class="wpill missed-pill">✖ <?php echo $wMissed; ?></span>
-                                <span class="wpill rate-pill <?php echo $wClass; ?>"><?php echo $wPct; ?>%</span>
-                            </div>
-                        </div>
-                        <span class="week-chevron <?php echo $isFirst ? 'open' : ''; ?>" id="chev-<?php echo $uid; ?>">▼</span>
-                    </div>
+                                        <div class='time-badge'>
+                                            {$h}:{$m}
+                                        </div>
 
-                    <!-- WEEK BODY -->
-                    <div class="week-body" id="<?php echo $uid; ?>" <?php echo $isFirst ? '' : 'style="display:none"'; ?>>
-                        <table class="data-table">
-                            <thead>
-                                <tr><th>Medicine</th><th>Status</th><th>Date &amp; Time</th></tr>
-                            </thead>
-                            <tbody>
-                            <?php foreach ($rows as $row):
-                                $cls = strtolower($row['status']);
-                                $sym = $row['status'] == 'Taken' ? '✔' : '✖';
+                                    </div>";
+                                }
+                            }
                             ?>
-                                <tr>
-                                    <td class="med-name">💊 <?php echo htmlspecialchars($row['medicine_name']); ?></td>
-                                    <td>
-                                        <span class="status-pill <?php echo $cls; ?>">
-                                            <?php echo "$sym {$row['status']}"; ?>
-                                        </span>
-                                    </td>
-                                    <td class="time-cell">
-                                        <?php echo date('D, d M Y · H:i', strtotime($row['taken_time'])); ?>
-                                    </td>
-                                </tr>
-                            <?php endforeach; ?>
-                            </tbody>
-                        </table>
-                    </div>
-
-                </div>
-
-                <?php $weekIndex++; endforeach; endif; ?>
+                        </div>
             </div>
+
 
         </div><!-- /.dash-col-right -->
 
