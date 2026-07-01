@@ -1,12 +1,29 @@
 <?php
-$host     = "ballast.proxy.rlwy.net";
-$port     = 33205;
+$host     = "gateway01.ap-southeast-1.prod.ali.cloud.tidbcloud.com";
+$port     = 4000;
 $dbname   = "railway";
-$username = "root";
-$password = "VcWYiEoGxyrZtqYLVygeUXNnPRpixkZo";
+$username = "xDjAHHUBSjw5Y5g.root";
+$password = "Ay3l3RfCgXvPRrPK";
 
-$conn = new mysqli($host, $username, $password, $dbname, $port);
+$conn = mysqli_init();
 
+// Enable SSL (required by TiDB Cloud)
+mysqli_ssl_set($conn, NULL, NULL, NULL, NULL, NULL);
+
+mysqli_real_connect(
+    $conn,
+    $host,
+    $username,
+    $password,
+    $dbname,
+    $port,
+    NULL,
+    MYSQLI_CLIENT_SSL
+);
+
+if (mysqli_connect_errno()) {
+    die("Connection failed: " . mysqli_connect_error());
+}
 if ($conn->connect_error) {
     die("Connection failed: " . $conn->connect_error);
 }
