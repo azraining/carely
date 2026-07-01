@@ -464,8 +464,8 @@ $todayPct    = $todayTotal > 0 ? round(($todayTaken / $todayTotal) * 100) : 0;
             </div>
 
             <!-- QUICK LINK -->
-            <a href="patient_add_schedule.php" class="quick-link fade-in delay-3">
-                <span>💊 Manage My Medications</span>
+            <a href="patient_history.php" class="quick-link fade-in delay-3">
+                <span>📋 View Medication History</span>
                 <span>→</span>
             </a>
 

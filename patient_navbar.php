@@ -92,7 +92,7 @@ $_navInitial = $_navName ? strtoupper(substr($_navName, 0, 1)) : '?';
 
     <nav class="topbar-nav">
         <a href="patients_dashboard.php"   class="<?php echo $current=='patients_dashboard.php'?'active':''; ?>">Dashboard</a>
-        <a href="patient_add_schedule.php" class="<?php echo $current=='patient_add_schedule.php'?'active':''; ?>">My Medication</a>
+        <a href="patient_history.php" class="<?php echo $current=='patient_history.php'?'active':''; ?>">Medication History</a>
         <a href="logout.php" class="nav-logout">🚪 Logout</a>
     </nav>
 
