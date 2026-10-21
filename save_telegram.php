@@ -71,7 +71,7 @@ if (strpos($text, "/start") === 0) {
         }
 
         // ===== SEND CONFIRMATION =====
-        $botToken = "8058219409:AAFr8rhUWmLL14VFfmTAt2UORiV7BLmcKXA";
+        $botToken = "";
 
         $msg = urlencode("✅ Connected to Smart Pill Box!");
 
@@ -102,7 +102,7 @@ if (strpos($text, "/start") === 0) {
 
         //file_put_contents("log.txt", "NO USER FOUND\n", FILE_APPEND);
 
-        $botToken = "8058219409:AAFr8rhUWmLL14VFfmTAt2UORiV7BLmcKXA";
+        $botToken = "";
 
         $msg = urlencode("❌ Invalid code. Please try again.");
 
