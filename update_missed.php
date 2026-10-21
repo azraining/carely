@@ -85,7 +85,7 @@ $time            = date("Y-m-d H:i:s");
 $emailData = [
     "sender" => [
         "name"  => "Carely",
-        "email" => "azimenurazreen@gmail.com"
+        "email" => "@gmail.com"
     ],
     "to" => [
         [
@@ -131,7 +131,7 @@ curl_close($ch);
 $telegramStatus = "No Telegram ID";
 
 if (!empty($chatId)) {
-    $botToken = "8058219409:AAFr8rhUWmLL14VFfmTAt2UORiV7BLmcKXA";  // <-- replace
+    $botToken = "";  // <-- replace
     $message  = urlencode(
         "MISSED MEDICATION ALERT\n" .
         "Patient: $patient_name\n" .
