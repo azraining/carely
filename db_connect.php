@@ -1,5 +1,5 @@
 <?php
-$host     = "gateway01.ap-southeast-1.prod.alicloud.tidbcloud.com";
+$host     = "replace.alicloud.tidbcloud.com";
 $port     = 4000;
 $dbname   = "railway";
 $username = ".root";
